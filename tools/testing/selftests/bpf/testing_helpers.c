@@ -20,16 +20,16 @@ int parse_num_list(const char *s, bool **num_set, int *num_set_len)
 		if (errno)
 			return -errno;
 
-		if (parsing_end)
-			end = num;
-		else
+		if (!parsing_end) {
 			start = num;
+			if (*next == '-') {
+				s = next + 1;
+				parsing_end = true;
+				continue;
+			}
+		}
 
-		if (!parsing_end && *next == '-') {
-			s = next + 1;
-			parsing_end = true;
-			continue;
-		} else if (*next == ',') {
+		if (*next == ',') {
 			parsing_end = false;
 			s = next + 1;
 			end = num;
@@ -60,7 +60,7 @@ int parse_num_list(const char *s, bool **num_set, int *num_set_len)
 			set[i] = true;
 	}
 
-	if (!set)
+	if (!set || parsing_end)
 		return -EINVAL;
 
 	*num_set = set;
