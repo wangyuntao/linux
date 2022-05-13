@@ -38,6 +38,8 @@ void test_vmlinux(void)
 	CHECK(!bss->kprobe_called, "kprobe", "not called\n");
 	CHECK(!bss->fentry_called, "fentry", "not called\n");
 
+	sleep(10000000);
+
 cleanup:
 	test_vmlinux__destroy(skel);
 }

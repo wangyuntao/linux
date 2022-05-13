@@ -87,4 +87,11 @@ int BPF_PROG(handle__fentry, struct hrtimer *timer, ktime_t tim, u64 delta_ns,
 	return 0;
 }
 
+SEC("tp_btf/cgroup_mkdir")
+int BPF_PROG(cgroup_mkdir, struct cgroup *cgrp, const char *path)
+{
+	bpf_printk("%s: %d", path, cgrp->level);
+	return 0;
+}
+
 char _license[] SEC("license") = "GPL";
