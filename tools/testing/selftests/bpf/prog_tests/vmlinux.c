@@ -20,9 +20,18 @@ void test_vmlinux(void)
 	struct test_vmlinux* skel;
 	struct test_vmlinux__bss *bss;
 
-	skel = test_vmlinux__open_and_load();
+	LIBBPF_OPTS(bpf_object_open_opts, opts,
+		    .kernel_log_level = 7,
+	);
+
+	skel = test_vmlinux__open_opts(&opts);
 	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
 		return;
+
+	err = test_vmlinux__load(skel);
+	if (CHECK(err, "load", "failed to load skeleton\n"))
+		goto cleanup;
+
 	bss = skel->bss;
 
 	err = test_vmlinux__attach(skel);
