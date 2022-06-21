@@ -1552,6 +1552,8 @@ static int __ref kernel_init(void *unused)
 			return 0;
 	}
 
+	panic("@@ test panic @@");
+
 	if (!try_to_run_init_process("/sbin/init") ||
 	    !try_to_run_init_process("/etc/init") ||
 	    !try_to_run_init_process("/bin/init") ||

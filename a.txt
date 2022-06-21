@@ -1,0 +1,21 @@
+[    1.436582] Kernel panic - not syncing: @@ test panic @@
+[    1.438979] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.19.0-rc2-00258-g354c6e071be9-dirty #3
+[    1.440782] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ArchLinux 1.16.0-1 04/01/2014
+[    1.442083] Call Trace:
+[    1.442424]  <TASK>
+[    1.442424]  <IRQ>
+[    1.442424]  <#DF>
+[    1.442424]  <TASK|IRQ>
+[    1.442704]  dump_stack_lvl+0x33/0x42
+[    1.443175]  panic+0x10e/0x2b8
+[    1.443542]  ? do_sysctl_args+0x7d/0xa0
+[    1.443986]  ? rest_init+0xc0/0xc0
+[    1.444363]  kernel_init+0xcc/0xd0
+[    1.444745]  ret_from_fork+0x22/0x30
+[    1.445140]  </TASK>
+[    1.445140]  </IRQ>
+[    1.442424]  </#DF>
+[    1.445140]  </TASK|IRQ>
+[    1.445548] Kernel Offset: disabled
+[    1.445935] ---[ end Kernel panic - not syncing: @@ test panic @@ ]---
+[    1.442704]  dump_stack_lvl+0x33/0x42

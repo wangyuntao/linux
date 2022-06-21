@@ -153,7 +153,7 @@ parse_symbol() {
 	expr=${expr/$name/0x$base_addr}
 
 	# Evaluate it to find the actual address
-	expr=$((expr))
+	expr=$((expr + $1))
 	local address=$(printf "%x\n" "$expr")
 
 	# Pass it to addr2line to get filename and line number
@@ -215,7 +215,7 @@ handle_line() {
 	if [[ $basepath == "auto" && $vmlinux != "" ]] ; then
 		module=""
 		symbol="kernel_init+0x0/0x0"
-		parse_symbol
+		parse_symbol 0
 		basepath=${symbol#kernel_init (}
 		basepath=${basepath%/init/main.c:*)}
 	fi
@@ -270,11 +270,14 @@ handle_line() {
 	fi
 
 	unset words[$last]
-	parse_symbol # modifies $symbol
+	parse_symbol $symbol_offset # modifies $symbol
 
 	# Add up the line number to the symbol
 	echo "${words[@]}" "$symbol $module"
 }
+
+call_trace_pattern="(TASK|IRQ|SOFTIRQ|ENTRY_TRAMPOLINE|#DF|NMI|#DB|#MC|#VC|#VCZ)"
+symbol_offset=0
 
 while read line; do
 	# Let's see if we have an address in the line
@@ -289,6 +292,11 @@ while read line; do
 	elif [[ -n $debuginfod && $line =~ PID:\ [0-9]+\ Comm: ]]; then
 		debuginfod_get_vmlinux "$line"
 	else
+		if [[ $line =~ \<${call_trace_pattern}\>$ ]]; then
+			symbol_offset=-1
+		elif [[ $line =~ \</${call_trace_pattern}\>$ ]]; then
+			symbol_offset=0
+		fi
 		# Nothing special in this line, show it as is
 		echo "$line"
 	fi
