@@ -69,8 +69,8 @@ void wg_packet_send_queued_handshake_initiation(struct wg_peer *peer,
 		goto out;
 
 	wg_peer_get(peer);
-	/* Queues up calling packet_send_queued_handshakes(peer), where we do a
-	 * peer_put(peer) after:
+	/* Queues up calling wg_packet_handshake_send_worker(peer), where we do
+	 * a wg_peer_put(peer) after:
 	 */
 	if (!queue_work(peer->device->handshake_send_wq,
 			&peer->transmit_handshake_work))

@@ -566,7 +566,7 @@ void wg_packet_receive(struct wg_device *wg, struct sk_buff *skb)
 		}
 		atomic_inc(&wg->handshake_queue_len);
 		cpu = wg_cpumask_next_online(&wg->handshake_queue.last_cpu);
-		/* Queues up a call to packet_process_queued_handshake_packets(skb): */
+		/* Queues up a call to wg_packet_handshake_receive_worker(skb): */
 		queue_work_on(cpu, wg->handshake_receive_wq,
 			      &per_cpu_ptr(wg->handshake_queue.worker, cpu)->work);
 		break;
