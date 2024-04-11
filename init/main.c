@@ -660,12 +660,14 @@ static void __init setup_command_line(char *command_line)
 			strcpy(saved_command_line + len, extra_init_args);
 			len += ilen - 4;	/* strlen(extra_init_args) */
 			strcpy(saved_command_line + len,
-				boot_command_line + initargs_offs - 1);
+				boot_command_line + initargs_offs);
 		} else {
 			len = strlen(saved_command_line);
 			strcpy(saved_command_line + len, " -- ");
 			len += 4;
 			strcpy(saved_command_line + len, extra_init_args);
+			len += ilen - 4; /* strlen(extra_init_args) */
+			saved_command_line[len-1] = '\0'; /* remove trailing space */
 		}
 	}
 
