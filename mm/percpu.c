@@ -1421,15 +1421,13 @@ static struct pcpu_chunk * __init pcpu_alloc_first_chunk(unsigned long tmp_addr,
 	if (chunk->end_offset) {
 		/* hide the end of the bitmap */
 		offset_bits = chunk->end_offset / PCPU_MIN_ALLOC_SIZE;
-		bitmap_set(chunk->alloc_map,
-			   pcpu_chunk_map_bits(chunk) - offset_bits,
-			   offset_bits);
-		set_bit((start_offset + map_size) / PCPU_MIN_ALLOC_SIZE,
-			chunk->bound_map);
+		start_offset = region_bits - offset_bits;
+
+		bitmap_set(chunk->alloc_map, start_offset, offset_bits);
+		set_bit(start_offset, chunk->bound_map);
 		set_bit(region_bits, chunk->bound_map);
 
-		pcpu_block_update_hint_alloc(chunk, pcpu_chunk_map_bits(chunk)
-					     - offset_bits, offset_bits);
+		pcpu_block_update_hint_alloc(chunk, start_offset, offset_bits);
 	}
 
 	return chunk;
