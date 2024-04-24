@@ -1329,6 +1329,15 @@ static void pcpu_init_md_blocks(struct pcpu_chunk *chunk)
 		pcpu_init_md_block(md_block, PCPU_BITMAP_BLOCK_BITS);
 }
 
+static void pcpu_chunk_hide_region(struct pcpu_chunk *chunk, int bit_off,
+				   int bits)
+{
+	bitmap_set(chunk->alloc_map, bit_off, bits);
+	set_bit(bit_off, chunk->bound_map);
+	set_bit(bit_off + bits, chunk->bound_map);
+	pcpu_block_update_hint_alloc(chunk, bit_off, bits);
+}
+
 /**
  * pcpu_alloc_first_chunk - creates chunks that serve the first chunk
  * @tmp_addr: the start of the region served
@@ -1409,27 +1418,15 @@ static struct pcpu_chunk * __init pcpu_alloc_first_chunk(unsigned long tmp_addr,
 	if (chunk->start_offset) {
 		/* hide the beginning of the bitmap */
 		offset_bits = chunk->start_offset / PCPU_MIN_ALLOC_SIZE;
-		bitmap_set(chunk->alloc_map, 0, offset_bits);
-		set_bit(0, chunk->bound_map);
-		set_bit(offset_bits, chunk->bound_map);
-
 		chunk->chunk_md.first_free = offset_bits;
-
-		pcpu_block_update_hint_alloc(chunk, 0, offset_bits);
+		pcpu_chunk_hide_region(chunk, 0, offset_bits);
 	}
 
 	if (chunk->end_offset) {
 		/* hide the end of the bitmap */
 		offset_bits = chunk->end_offset / PCPU_MIN_ALLOC_SIZE;
-		bitmap_set(chunk->alloc_map,
-			   pcpu_chunk_map_bits(chunk) - offset_bits,
-			   offset_bits);
-		set_bit((start_offset + map_size) / PCPU_MIN_ALLOC_SIZE,
-			chunk->bound_map);
-		set_bit(region_bits, chunk->bound_map);
-
-		pcpu_block_update_hint_alloc(chunk, pcpu_chunk_map_bits(chunk)
-					     - offset_bits, offset_bits);
+		pcpu_chunk_hide_region(chunk, region_bits - offset_bits,
+				       offset_bits);
 	}
 
 	return chunk;
