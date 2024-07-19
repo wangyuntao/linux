@@ -227,7 +227,7 @@
 
 #define GDT_SIZE			(GDT_ENTRIES*8)
 #define GDT_ENTRY_TLS_ENTRIES		3
-#define TLS_SIZE			(GDT_ENTRY_TLS_ENTRIES* 8)
+#define TLS_SIZE			(GDT_ENTRY_TLS_ENTRIES*8)
 
 /* Bit size and mask of CPU number stored in the per CPU data (and TSC_AUX) */
 #define VDSO_CPUNODE_BITS		12
